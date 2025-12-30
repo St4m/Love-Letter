@@ -1,40 +1,219 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Love Letter</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    @font-face {
+* {
+  box-sizing: border-box;
+  font-family: Georgia, serif;
+}
+
+@font-face {
   font-family: Champagne Royale;
   src: url('Champagne Royale.ttf');
 }
-p {
-      line-height: 1;
-      font-family: 'Champagne Royale', serif;
-    }
-  </style>
-</head>
-<body>
 
-<div class="container">
-  <div class="envelope" onclick="openLetter()">
-    <div class="flap"></div>
-    <div class="body"></div>
-    <div class="letter">
-      <h2>Жаным ❤️</h2>
-      <p>
-        From the moment you entered my life,  
-        everything felt warmer, brighter, and more meaningful.  
-        This letter is a small reminder that  
-        you are deeply loved — always 💘.
-      </p>
-      <p class="signature">— Sushi 🍣</p>
-    </div>
-  </div>
-</div>
+@media (max-width: 480px) {
+  .envelope {
+    transform: scale(0.85);
+  }
 
-<script src="script.js"></script>
-</body>
-</html>
+  .letter {
+    height: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+body {
+  height: 120vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08), transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05), transparent 45%),
+    linear-gradient(180deg, #0b1d26, #132f3a, #1e3f4d);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Perspective is CRITICAL */
+.container {
+  perspective: 1000px;
+}
+
+.envelope {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 280px;
+  height: 180px;
+  position: relative;
+  cursor: pointer;
+  overflow: visible; /* keep the letter clipping inside the envelope */
+  transition: transform 0.6s cubic-bezier(.2,.9,.3,1), box-shadow 0.4s ease;
+  transform-origin: center;
+  transform-style: preserve-3d;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+
+/* Envelope base */
+.body {
+  width: 100%;
+  height: 100%;
+  background: #aeb157;
+  border-radius: 2px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.6s cubic-bezier(.2,.9,.3,1);
+  will-change: transform;
+}
+
+/* Flap */
+.flap {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-top: 90px solid #b6b95d;
+  transform-origin: top;
+  transition: transform 0.8s ease;
+  z-index: 3;
+  backface-visibility: hidden; /* prevent mirrored backside during rotation */
+  transform-style: preserve-3d;
+}
+
+/* Letter */
+.letter {
+  position: absolute; /* absolute to control exact placement */
+  left: 50%;
+  top: 6px;
+  width: 100%;
+  height: 410px;
+  background: #988b69;
+    transform: translateX(-50%) translateY(110%); /* start hidden below */
+  padding: 20px 18px;
+  border-radius: 4px;
+  text-align: left;
+  transition: transform 1.2s cubic-bezier(.18,.9,.25,1),
+    opacity 0.6s ease;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04);
+  opacity: 0; /* hidden by default */
+  pointer-events: none; /* not interactive when hidden */
+}
+
+.letter h2 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+  color:  #2f6f2c;
+}
+
+.letter p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 6px 0;
+}
+
+.signature {
+  margin-top: 12px;
+  font-style: italic;
+  text-align: right;
+  color: #555;
+}
+
+/* ❄️ Snow layer */
+.snow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 100px 150px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 200px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 300px 200px, rgba(255,255,255,0.85), transparent),
+    radial-gradient(1px 1px at 400px 50px, rgba(255,255,255,0.75), transparent);
+  background-size: 600px 600px;
+  animation: snowFall 18s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes snowFall {
+  from {
+    background-position: 0 -600px;
+  }
+  to {
+    background-position: 0 600px;
+  }
+}
+
+.fog {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.02),
+      rgba(255,255,255,0.05)
+    );
+  animation: fogMove 20s ease-in-out infinite alternate;
+}
+
+@keyframes fogMove {
+  from { transform: translateY(0); }
+  to   { transform: translateY(10px); }
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 40% 60%, white, transparent),
+    radial-gradient(1px 1px at 70% 30%, white, transparent),
+    radial-gradient(1px 1px at 85% 80%, white, transparent),
+    radial-gradient(1px 1px at 25% 75%, white, transparent);
+  opacity: 0.8;
+}
+
+
+/* OPEN STATE */
+.envelope.open {
+  transform: translateY(20px) translateZ(0); /* move entire envelope down so flap & body move together */
+  box-shadow: 0 20px 30px rgba(0,0,0,0.25);
+}
+
+.envelope.open .flap {
+  will-change: transform;
+  transform: rotateX(180deg);
+  transition-delay: 0s;
+}
+
+.envelope.open .letter {
+  will-change: transform;
+  transform: translateX(-50%) translateY(-50%);
+  opacity: 1; /* fade in */
+  pointer-events: auto; /* interactive when visible */
+  transition-delay: 0.25s;
+} 

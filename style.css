@@ -1,15 +1,43 @@
 * {
   box-sizing: border-box;
-  font-family: 'Georgia', serif;
+  font-family: Georgia, serif;
+}
+
+@font-face {
+  font-family: Champagne Royale;
+  src: url('Champagne Royale.ttf');
+}
+
+@media (max-width: 480px) {
+  .envelope {
+    transform: scale(0.85);
+  }
+
+  .letter {
+    height: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 body {
-  height: 100vh;
+  height: 120vh;
   margin: 0;
-  background: linear-gradient(135deg, #357c33, #1c471a);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08), transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05), transparent 45%),
+    linear-gradient(180deg, #0b1d26, #132f3a, #1e3f4d);
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 /* Perspective is CRITICAL */
@@ -18,6 +46,9 @@ body {
 }
 
 .envelope {
+  background: none;
+  border: none;
+  padding: 0;
   width: 280px;
   height: 180px;
   position: relative;
@@ -28,12 +59,22 @@ body {
   transform-style: preserve-3d;
 }
 
+.container::before {
+  content: "";
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+
 /* Envelope base */
 .body {
   width: 100%;
   height: 100%;
-  background: #3f943c;
-  border-radius: 6px;
+  background: #aeb157;
+  border-radius: 2px;
   position: relative;
   z-index: 1;
   transition: transform 0.6s cubic-bezier(.2,.9,.3,1);
@@ -48,7 +89,7 @@ body {
   height: 0;
   border-left: 140px solid transparent;
   border-right: 140px solid transparent;
-  border-top: 90px solid #398136;
+  border-top: 90px solid #b6b95d;
   transform-origin: top;
   transition: transform 0.8s ease;
   z-index: 3;
@@ -61,9 +102,9 @@ body {
   position: absolute; /* absolute to control exact placement */
   left: 50%;
   top: 6px;
-  width: 92%;
-  height: 240px;
-  background: #fffdf8;
+  width: 100%;
+  height: 410px;
+  background: #988b69;
     transform: translateX(-50%) translateY(110%); /* start hidden below */
   padding: 20px 18px;
   border-radius: 4px;
@@ -96,6 +137,67 @@ body {
   color: #555;
 }
 
+/* ❄️ Snow layer */
+.snow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 100px 150px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 200px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 300px 200px, rgba(255,255,255,0.85), transparent),
+    radial-gradient(1px 1px at 400px 50px, rgba(255,255,255,0.75), transparent);
+  background-size: 600px 600px;
+  animation: snowFall 18s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes snowFall {
+  from {
+    background-position: 0 -600px;
+  }
+  to {
+    background-position: 0 600px;
+  }
+}
+
+.fog {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.02),
+      rgba(255,255,255,0.05)
+    );
+  animation: fogMove 20s ease-in-out infinite alternate;
+}
+
+@keyframes fogMove {
+  from { transform: translateY(0); }
+  to   { transform: translateY(10px); }
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 40% 60%, white, transparent),
+    radial-gradient(1px 1px at 70% 30%, white, transparent),
+    radial-gradient(1px 1px at 85% 80%, white, transparent),
+    radial-gradient(1px 1px at 25% 75%, white, transparent);
+  opacity: 0.8;
+}
+
+
 /* OPEN STATE */
 .envelope.open {
   transform: translateY(20px) translateZ(0); /* move entire envelope down so flap & body move together */
@@ -103,11 +205,13 @@ body {
 }
 
 .envelope.open .flap {
+  will-change: transform;
   transform: rotateX(180deg);
   transition-delay: 0s;
 }
 
 .envelope.open .letter {
+  will-change: transform;
   transform: translateX(-50%) translateY(-50%);
   opacity: 1; /* fade in */
   pointer-events: auto; /* interactive when visible */
